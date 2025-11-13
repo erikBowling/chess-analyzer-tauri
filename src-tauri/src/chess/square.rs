@@ -17,6 +17,20 @@ impl Rank {
     pub fn to_int(self) -> u8 {
         self as u8
     }
+
+    pub fn from_char(c: char) -> Option<Self> {
+        match c {
+            '1' => Some(Rank::One),
+            '2' => Some(Rank::Two),
+            '3' => Some(Rank::Three),
+            '4' => Some(Rank::Four),
+            '5' => Some(Rank::Five),
+            '6' => Some(Rank::Six),
+            '7' => Some(Rank::Seven),
+            '8' => Some(Rank::Eight),
+            _ => None,
+        }
+    }
 }
 
 #[derive(EnumIter, Copy, Clone, Debug)]
@@ -34,6 +48,20 @@ pub enum File {
 impl File {
     pub fn to_int(self) -> u8 {
         self as u8
+    }
+
+    pub fn from_char(c: char) -> Option<Self> {
+        match c.to_ascii_lowercase() {
+            'a' => Some(File::A),
+            'b' => Some(File::B),
+            'c' => Some(File::C),
+            'd' => Some(File::D),
+            'e' => Some(File::E),
+            'f' => Some(File::F),
+            'g' => Some(File::G),
+            'h' => Some(File::H),
+            _ => None,
+        }
     }
 }
 
@@ -69,5 +97,21 @@ impl Square {
 
     pub fn file(&self) -> &File {
         &self.file
+    }
+
+    /// Parse a square notation like "e2" or "a8" into (File, Rank)
+    pub fn parse_notation(notation: &str) -> Option<(Rank, File)> {
+        if notation.len() != 2 {
+            return None;
+        }
+
+        let mut chars = notation.chars();
+        let file_char = chars.next()?;
+        let rank_char = chars.next()?;
+
+        let file = File::from_char(file_char)?;
+        let rank = Rank::from_char(rank_char)?;
+
+        Some((rank, file))
     }
 }

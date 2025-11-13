@@ -112,26 +112,31 @@ impl Board {
         }
     }
 
-    pub fn get_square_mut(&mut self, rank: Rank, file: File) -> &mut Square {
+    pub fn get_square_mut(&mut self, location: (Rank, File)) -> &mut Square {
         match self.squares.iter_mut().find(|square| {
-            square.rank().to_int() == rank as u8 && square.file().to_int() == file as u8
+            square.rank().to_int() == location.0 as u8 && square.file().to_int() == location.1 as u8
         }) {
             Some(square) => square,
-            None => panic!("Square not found at {:?}{:?}", file, rank),
+            None => panic!("Square not found at {:?}{:?}", location.1, location.0),
         }
     }
 
-    pub fn move_piece(&mut self, from_square: &mut Square, to_square: &mut Square) {
-        // TODO: Check if the to_square has a piece
-        // If so, handle collision
-        match from_square.get_piece() {
-            Some(piece) => {
-                let new_piece = Piece::new(*piece.piece_type(), *piece.color());
-                from_square.clear_piece();
-
-                to_square.set_piece(new_piece);
+    pub fn move_piece(&mut self, from_coords: (Rank, File), to_coords: (Rank, File)) {
+        let piece_to_move = {
+            let from_square = self.get_square_mut(from_coords);
+            match from_square.get_piece() {
+                Some(piece) => {
+                    let new_piece = Piece::new(*piece.piece_type(), *piece.color());
+                    from_square.clear_piece();
+                    Some(new_piece)
+                }
+                None => None,
             }
-            None => {}
+        };
+
+        if let Some(piece) = piece_to_move {
+            let to_square = self.get_square_mut(to_coords);
+            to_square.set_piece(piece);
         }
     }
 }

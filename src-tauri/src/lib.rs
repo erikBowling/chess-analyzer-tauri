@@ -5,6 +5,7 @@ pub mod chess;
 use state::AppState;
 
 use api::game::get_board_fen;
+use api::game::move_piece;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -12,7 +13,8 @@ pub fn run() {
         .manage(AppState::new())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            get_board_fen
+            get_board_fen,
+            move_piece
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
